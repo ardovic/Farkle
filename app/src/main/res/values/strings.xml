@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="app_name">Farkle</string>
+
+    <string name="roboto_medium" translatable="false">fonts/roboto_medium.ttf</string>
+
+</resources>
