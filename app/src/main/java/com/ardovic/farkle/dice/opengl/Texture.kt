@@ -18,28 +18,28 @@ abstract class Texture {
         this.height = height
     }
 
-    fun addSprite(src: Rect?, dst: Rect?) {
-        defaultSpriteData().addSprite(src!!, dst!!)
+    fun addSprite(src: Rect, dst: Rect) {
+        defaultSpriteData().addSprite(src, dst)
     }
 
-    fun addSprite(src: Rect?, dst: Rect?, angle: Int) {
-        defaultSpriteData().addSprite(src!!, dst!!, angle)
+    fun addSprite(src: Rect, dst: Rect, angle: Int) {
+        defaultSpriteData().addSprite(src, dst, angle)
     }
 
-    fun addSprite(src: Rect?, dst: Rect?, angle: Int, argb: Int) {
-        getARGBSpriteData(argb).addSprite(src!!, dst!!, angle)
+    fun addSprite(src: Rect, dst: Rect, angle: Int, argb: Int) {
+        getARGBSpriteData(argb).addSprite(src, dst, angle)
     }
 
     protected fun addSprite(
-        src: Rect?,
+        src: Rect,
         drawX: Int,
         drawY: Int,
-        hotRect: Rect?,
+        hotRect: Rect,
         angle: Int,
         sizeX: Float,
         sizeY: Float
     ) {
-        defaultSpriteData().addSprite(src!!, drawX, drawY, hotRect!!, angle, sizeX, sizeY)
+        defaultSpriteData().addSprite(src, drawX, drawY, hotRect, angle, sizeX, sizeY)
     }
 
     protected fun addSprite(
@@ -73,7 +73,15 @@ abstract class Texture {
         return layerData
     }
 
-    fun getARGBSpriteData(argb: Int): LayerData = spriteData.get(argb)
+    fun getARGBSpriteData(argb: Int): LayerData {
+        var layerData = spriteData[argb]
+        if (layerData == null) {
+            layerData = LayerData(argb)
+            spriteData.put(argb, layerData)
+            layerData.setDimensions(width, height)
+        }
+        return layerData
+    }
 
     abstract fun getBitmap(context: Context): Bitmap
 }

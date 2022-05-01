@@ -14,8 +14,11 @@ import android.graphics.Color
 import android.graphics.Point
 import android.os.Build
 import android.view.View
+import android.view.WindowInsets
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.ardovic.farkle.dice.R
 import com.ardovic.farkle.dice.graphics.Graphics
 import com.ardovic.farkle.dice.opengl.Renderer
@@ -23,11 +26,18 @@ import java.util.ArrayList
 
 object SystemDelegate {
 
-    fun onCreateBgViewReturn(activity: MainActivity, rootLayout: FrameLayout): ImageView {
+    fun onCreateBgViewReturn(activity: MainActivity, rootLayout: FrameLayout) {
         activity.window.setBackgroundDrawable(null)
         val window = activity.window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.navigationBarColor = Color.TRANSPARENT
+
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
+//        WindowInsetsControllerCompat(window, mainContainer).let { controller ->
+//            controller.hide(WindowInsetsCompat.Type.systemBars())
+//            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+//        }
+
         activity.window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -43,10 +53,10 @@ object SystemDelegate {
             height,
             activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
         )
-        val bgView = ImageView(activity)
+        //val bgView = ImageView(activity)
 
-        bgView.scaleType = ImageView.ScaleType.CENTER_CROP
-        bgView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.bg_green_felt))
+        //bgView.scaleType = ImageView.ScaleType.CENTER_CROP
+        //bgView.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.bg_green_felt))
 
 //        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 //            bgView.setImageDrawable(activity.getResources().getDrawable(Graphics.BG_GREEN_FELT));
@@ -57,9 +67,7 @@ object SystemDelegate {
         val renderer = Renderer(
             activity,
             intArrayOf(
-                Graphics.SPRITE_MAP_01,
-                Graphics.SPRITE_MAP_02,
-                Graphics.SPRITE_MAP_03,
+                Graphics.SPRITE_MAP,
                 Graphics.ROBOTO_FONT
             ),
             activity
@@ -78,10 +86,10 @@ object SystemDelegate {
             FrameLayout.LayoutParams.MATCH_PARENT
         )
         rootLayout.layoutParams = params
-        rootLayout.addView(bgView, params)
+       // rootLayout.addView(bgView, params)
         rootLayout.addView(surfaceView, params)
         activity.setContentView(rootLayout)
-        return bgView
+        //return bgView
     }
 
     fun forceFullScreen(activity: Activity) {

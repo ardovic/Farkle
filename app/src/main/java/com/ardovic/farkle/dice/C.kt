@@ -13,11 +13,29 @@ object C {
     var defaultTextSize: Int = 40 // TODO
     var defaultTextVerticalPadding: Int = 10 // TODO
 
+    var deviceCenterX: Int = 0
+    var deviceCenterY: Int = 0
+
+    var deviceThirdX: Int = 0
+    var deviceTwoThirdsX: Int = 0
+
+    var deviceSixthX: Int = 0
+    var deviceFiveSixthsX: Int = 0
 
     fun initialize(deviceWidth: Int, deviceHeight: Int, isPortraitOrientation: Boolean) {
         this.deviceWidth = deviceWidth
         this.deviceHeight = deviceHeight
         this.isPortraitOrientation = isPortraitOrientation
+
+        deviceCenterX = deviceWidth / 2
+        deviceCenterY = deviceHeight / 2
+
+        deviceThirdX = deviceWidth / 3
+        deviceTwoThirdsX = deviceWidth - deviceThirdX
+
+        deviceSixthX = deviceWidth / 6
+        deviceFiveSixthsX = deviceWidth - deviceSixthX
+
 
 
     }
