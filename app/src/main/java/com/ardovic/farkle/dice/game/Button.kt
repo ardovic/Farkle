@@ -13,13 +13,11 @@ class Button constructor(val id: Id) : GameObject() {
 
     init {
         image = Graphics.metal
-        w = 100
-        h = 100
+        setWH(100, 100)
 
 
-
-        y = C.deviceHeight - 200
-        x = when (id) {
+        val sety = C.deviceHeight - h - C.navBarHeight
+        val setx = when (id) {
             Id.GO_LEFT -> {
                 C.deviceSixthX - w / 2
             }
@@ -30,6 +28,8 @@ class Button constructor(val id: Id) : GameObject() {
                 C.deviceFiveSixthsX - w / 2
             }
         }
+
+        setXY(setx, sety)
 
     }
 

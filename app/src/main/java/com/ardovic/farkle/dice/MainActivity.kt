@@ -1,7 +1,6 @@
 package com.ardovic.farkle.dice
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -9,12 +8,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ardovic.farkle.dice.MainActivity.State.*
 import com.ardovic.farkle.dice.delegates.SystemDelegate
-import com.ardovic.farkle.dice.game.Button
+import com.ardovic.farkle.dice.game.*
 import com.ardovic.farkle.dice.game.Button.*
 import com.ardovic.farkle.dice.game.Button.Id.*
-import com.ardovic.farkle.dice.game.GameObject
-import com.ardovic.farkle.dice.game.Sands
-import com.ardovic.farkle.dice.game.Tank
+import com.ardovic.farkle.dice.game.tank.TankComposite
 import com.ardovic.farkle.dice.graphics.Graphics
 import com.ardovic.farkle.dice.opengl.Drawer
 import com.ardovic.farkle.dice.opengl.Renderer
@@ -25,11 +22,13 @@ class MainActivity : AppCompatActivity(), Drawer {
 
     private lateinit var rootLayout: FrameLayout
 
-    private var buffers: Array<MutableList<GameObject>> = Array(C.BUFFER_COUNT) { ArrayList() }
+    private var buffers: Array<MutableList<Drawable>> = Array(C.BUFFER_COUNT) { ArrayList() }
 
 
     lateinit var sands: Sands
-    lateinit var tank: Tank
+    lateinit var enemies: Enemies
+    //lateinit var tank: Tank
+    lateinit var tankComposite: TankComposite
     lateinit var allButtons: Map<Id, Button>
     val visibleButtons: MutableList<Button> = mutableListOf()
     var activeButton: Button? = null
@@ -47,6 +46,13 @@ class MainActivity : AppCompatActivity(), Drawer {
         RIGHT_TO_MID,
     }
 
+    companion object {
+        const val TRANSITION_FRAMES = 30
+    }
+
+    private var transitionFrames = 0
+    private var setupComplete: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.GameTheme)
@@ -57,19 +63,28 @@ class MainActivity : AppCompatActivity(), Drawer {
         SystemDelegate.onCreateBgViewReturn(this, rootLayout)
 
         sands = Sands()
-        tank = Tank()
-        allButtons = hashMapOf(
-            GO_LEFT to Button(GO_LEFT),
-            GO_MID to Button(GO_MID),
-            GO_RIGHT to Button(GO_RIGHT)
-        )
+        enemies = Enemies()
 
-        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { _, insets ->
+            if (!setupComplete) {
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            println(Log.d("HEX", "${systemBars.bottom}, ${systemBars.top}"))
+                C.statusBarHeight = systemBars.top
+                C.navBarHeight = systemBars.bottom
 
-            return@setOnApplyWindowInsetsListener insets
+               // tank = Tank()
+
+                tankComposite = TankComposite()
+                tankComposite.setCenterXY(C.deviceCenterX, C.deviceHeight - C.navBarHeight - 300)
+
+                allButtons = hashMapOf(
+                    GO_LEFT to Button(GO_LEFT),
+                    GO_MID to Button(GO_MID),
+                    GO_RIGHT to Button(GO_RIGHT)
+                )
+                setupComplete = true
+            }
+            insets
         }
 
 
@@ -96,7 +111,7 @@ class MainActivity : AppCompatActivity(), Drawer {
                     when (it.id) {
                         GO_LEFT -> {
                             currentState = MID_TO_LEFT
-                            transitionFrames = 40
+                            transitionFrames = TRANSITION_FRAMES
                         }
                         GO_MID -> {
                             if (currentState == LEFT) {
@@ -105,11 +120,11 @@ class MainActivity : AppCompatActivity(), Drawer {
                             if (currentState == RIGHT) {
                                 currentState = RIGHT_TO_MID
                             }
-                            transitionFrames = 40
+                            transitionFrames = TRANSITION_FRAMES
                         }
                         GO_RIGHT -> {
                             currentState = MID_TO_RIGHT
-                            transitionFrames = 40
+                            transitionFrames = TRANSITION_FRAMES
                         }
                     }
                 }
@@ -120,10 +135,10 @@ class MainActivity : AppCompatActivity(), Drawer {
         return true
     }
 
-    private var transitionFrames = 0
-
     private fun update() {
         sands.update()
+        enemies.update()
+
 
         visibleButtons.clear()
         when (currentState) {
@@ -138,58 +153,86 @@ class MainActivity : AppCompatActivity(), Drawer {
                 visibleButtons.add(allButtons[GO_MID]!!)
             }
             MID_TO_RIGHT -> {
-                if (transitionFrames < 20) {
-                    tank.r -= 2
+                if (transitionFrames < TRANSITION_FRAMES / 2) {
+                    tankComposite.r -= 2
                 } else {
-                    tank.r += 2
+                    tankComposite.r += 2
                 }
                 if (transitionFrames > 0) {
-                    tank.x += (C.deviceFiveSixthsX - tank.w / 2 - tank.x) / transitionFrames
+
+                    val dx = (C.deviceFiveSixthsX - tankComposite.centerX) / transitionFrames
+
+                    tankComposite.setCenterXY(centerX = tankComposite.centerX + dx)
                 } else {
-                    tank.r = 0
-                    tank.x = C.deviceFiveSixthsX - tank.w / 2
+                    tankComposite.r = 0
+
+                    tankComposite.setCenterXY(
+                        centerX = C.deviceFiveSixthsX
+                    )
                     currentState = RIGHT
                 }
+
             }
             MID_TO_LEFT -> {
-                if (transitionFrames < 20) {
-                    tank.r += 2
+                if (transitionFrames < TRANSITION_FRAMES / 2) {
+                    tankComposite.r += 2
                 } else {
-                    tank.r -= 2
+                    tankComposite.r -= 2
                 }
                 if (transitionFrames > 0) {
-                    tank.x += (C.deviceSixthX - tank.w / 2 - tank.x) / transitionFrames
+                    val dx = (C.deviceSixthX - tankComposite.centerX) / transitionFrames
+
+                    tankComposite.setCenterXY(
+                        centerX = tankComposite.centerX + dx
+                    )
                 } else {
-                    tank.r = 0
-                    tank.x = C.deviceSixthX - tank.w / 2
+                    tankComposite.r = 0
+
+                    tankComposite.setCenterXY(
+                        centerX = C.deviceSixthX
+                    )
                     currentState = LEFT
                 }
             }
             RIGHT_TO_MID -> {
-                if (transitionFrames < 20) {
-                    tank.r += 2
+                if (transitionFrames < TRANSITION_FRAMES / 2) {
+                    tankComposite.r += 2
                 } else {
-                    tank.r -= 2
+                    tankComposite.r -= 2
                 }
                 if (transitionFrames > 0) {
-                    tank.x += (C.deviceCenterX - tank.w / 2 - tank.x) / transitionFrames
+                    val dx = (C.deviceCenterX - tankComposite.centerX) / transitionFrames
+
+                    tankComposite.setCenterXY(
+                        centerX = tankComposite.centerX + dx
+                    )
                 } else {
-                    tank.r = 0
-                    tank.x = C.deviceCenterX - tank.w / 2
+                    tankComposite.r = 0
+
+                    tankComposite.setCenterXY(
+                        centerX = C.deviceCenterX
+                    )
                     currentState = MID
                 }
             }
             LEFT_TO_MID -> {
-                if (transitionFrames < 20) {
-                    tank.r -= 2
+                if (transitionFrames < TRANSITION_FRAMES / 2) {
+                    tankComposite.r -= 2
                 } else {
-                    tank.r += 2
+                    tankComposite.r += 2
                 }
                 if (transitionFrames > 0) {
-                    tank.x += (C.deviceCenterX - tank.w / 2 - tank.x) / transitionFrames
+                    val dx = (C.deviceCenterX - tankComposite.centerX) / transitionFrames
+
+                    tankComposite.setCenterXY(
+                        centerX = tankComposite.centerX + dx
+                    )
                 } else {
-                    tank.r = 0
-                    tank.x = C.deviceCenterX - tank.w / 2
+                    tankComposite.r = 0
+
+                    tankComposite.setCenterXY(
+                        centerX = C.deviceCenterX
+                    )
                     currentState = MID
                 }
             }
@@ -202,7 +245,8 @@ class MainActivity : AppCompatActivity(), Drawer {
 
 
 
-        tank.update()
+        //tank.update()
+        tankComposite.update()
     }
 
     private fun copyToBuffer() {
@@ -210,7 +254,8 @@ class MainActivity : AppCompatActivity(), Drawer {
             it.clear()
         }
         buffers[0].add(sands)
-        buffers[1].add(tank)
+        buffers[1].add(enemies)
+        buffers[1].add(tankComposite)
         buffers[2].addAll(visibleButtons)
 
     }

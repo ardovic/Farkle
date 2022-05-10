@@ -26,12 +26,12 @@ class Sands : GameObject() {
         var topY = 0
 
         sands.forEach {
-            it.y += 3
+            it.setXY(y = it.y + 3)
             topY = minOf(it.y, topY)
         }
 
         sands.filter { it.y > C.deviceHeight }
-            .forEach{ it.y = topY - size }
+            .forEach { it.setXY(y = topY - size) }
     }
 
     override fun draw(renderer: Renderer) {

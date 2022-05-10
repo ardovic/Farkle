@@ -22,6 +22,9 @@ object C {
     var deviceSixthX: Int = 0
     var deviceFiveSixthsX: Int = 0
 
+    var navBarHeight: Int = 0
+    var statusBarHeight: Int = 0
+
     fun initialize(deviceWidth: Int, deviceHeight: Int, isPortraitOrientation: Boolean) {
         this.deviceWidth = deviceWidth
         this.deviceHeight = deviceHeight

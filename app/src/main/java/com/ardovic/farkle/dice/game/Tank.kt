@@ -8,12 +8,13 @@ class Tank : GameObject() {
     private var frame = 0;
 
     init {
-        w = 100
-        h = 100
+        setWH(100, 100)
 
 
-        x = (C.deviceWidth - w) / 2
-        y = C.deviceHeight - h - 100
+        setXY(
+            x = (C.deviceWidth - w) / 2,
+            y = C.deviceHeight - h - C.navBarHeight
+        )
 
         image = Graphics.greenTankArray[frame]
     }
