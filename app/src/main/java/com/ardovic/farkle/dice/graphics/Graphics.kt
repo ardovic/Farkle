@@ -10,7 +10,7 @@ object Graphics {
 
     val ROBOTO_FONT: Int = R.string.roboto_medium
 
-    val COLOR_ORIGINAL = Color.argb(255, 255, 255, 255)
+    val COLOR_DEFAULT = Color.argb(255, 255, 255, 255)
     val COLOR_SEMI_TRANSPARENT = Color.argb(200, 150, 150, 150)
 
 
@@ -31,6 +31,14 @@ object Graphics {
     val tank_snails_2 = Image(100, 0, 50, 200, SPRITE_MAP_1)
     val tank_body_0 = Image(150, 0, 80, 150, SPRITE_MAP_1)
     val tank_gun_0 = Image(230, 0, 60, 180, SPRITE_MAP_1)
+
+    val soldier_state_normal = Image(290, 0, 80, 80, SPRITE_MAP_1).mirrorVertical()
+    val soldier_state_aiming = Image(370, 0, 80, 80, SPRITE_MAP_1).mirrorVertical()
+    val soldier_leg_right = Image(450, 60, 24, 60, SPRITE_MAP_1)
+    val soldier_leg_left = Image(450, 60, 24, 60, SPRITE_MAP_1).mirrorHorizontal()
+    val barrel_side = Image(450, 0, 80, 60, SPRITE_MAP_1)
+    val barrel_top = Image(530, 0, 60, 60, SPRITE_MAP_1)
+    val barrel_flammable_sign = Image(590, 0, 40, 40, SPRITE_MAP_1)
 
     val wall = Image(0, 2 * size, 32, 32, SPRITE_MAP)
 

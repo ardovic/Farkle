@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import android.content.Context
 import android.graphics.*
@@ -75,7 +75,7 @@ class FontTexture(private val typeface: Typeface) : Texture() {
         paint.isAntiAlias = true
         paint.typeface = typeface
         paint.textSize = size.toFloat()
-        paint.color = Graphics.COLOR_ORIGINAL
+        paint.color = Graphics.COLOR_DEFAULT
         paint.textAlign = Paint.Align.LEFT
         val fm = paint.fontMetrics
         val fontHeight = ceil((abs(fm.bottom) + abs(fm.top)).toDouble()).toInt()

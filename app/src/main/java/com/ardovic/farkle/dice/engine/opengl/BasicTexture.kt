@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import android.content.Context
 import android.graphics.Bitmap

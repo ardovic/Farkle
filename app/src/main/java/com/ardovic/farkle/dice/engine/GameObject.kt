@@ -1,18 +1,16 @@
-package com.ardovic.farkle.dice.game
+package com.ardovic.farkle.dice.engine
 
 import android.graphics.Rect
-import com.ardovic.farkle.dice.game.tank.Body
-import com.ardovic.farkle.dice.game.tank.Gun
 import com.ardovic.farkle.dice.graphics.Graphics
 import com.ardovic.farkle.dice.graphics.Image
-import com.ardovic.farkle.dice.opengl.Renderer
+import com.ardovic.farkle.dice.engine.opengl.Renderer
 import kotlin.math.*
 
-open class GameObject : Drawable {
+abstract class GameObject : Drawable {
 
-    private var rect: Rect = Rect()
-
-    var color: Int = Graphics.COLOR_ORIGINAL
+    var rect: Rect = Rect()
+        private set
+    var color: Int = Graphics.COLOR_DEFAULT
     var image: Image = Graphics.sand // TODO -> error image
 
     var x = 0
@@ -76,7 +74,9 @@ open class GameObject : Drawable {
             renderX = x
             renderY = y
         } else {
-            // Radians of normalized angle
+
+            // TODO optimize calculations with caching -> quick converted from degrees to cosine/sine
+
             val radians = Math.toRadians((r).toDouble())
 
             val referenceX = centerX + pivotDX
@@ -100,7 +100,7 @@ open class GameObject : Drawable {
         rect.bottom = renderY + h
 
         when {
-            color != Graphics.COLOR_ORIGINAL -> renderer.draw(image, rect, r, color)
+            color != Graphics.COLOR_DEFAULT -> renderer.draw(image, rect, r, color)
             r % 360 != 0 -> renderer.draw(image, rect, r)
             else -> renderer.draw(image, rect)
         }

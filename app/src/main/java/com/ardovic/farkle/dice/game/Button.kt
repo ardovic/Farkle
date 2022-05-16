@@ -1,6 +1,7 @@
 package com.ardovic.farkle.dice.game
 
 import com.ardovic.farkle.dice.C
+import com.ardovic.farkle.dice.engine.GameObject
 import com.ardovic.farkle.dice.graphics.Graphics
 
 class Button constructor(val id: Id) : GameObject() {

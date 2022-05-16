@@ -1,6 +1,6 @@
 package com.ardovic.farkle.dice.game.tank
 
-import com.ardovic.farkle.dice.game.GameObject
+import com.ardovic.farkle.dice.engine.GameObject
 import com.ardovic.farkle.dice.graphics.Graphics
 
 class Body() : GameObject() {

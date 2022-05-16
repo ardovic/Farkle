@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -64,10 +64,10 @@ abstract class Texture {
     }
 
     private fun defaultSpriteData(): LayerData {
-        var layerData = spriteData[Graphics.COLOR_ORIGINAL]
+        var layerData = spriteData[Graphics.COLOR_DEFAULT]
         if (layerData == null) {
-            layerData = LayerData(Graphics.COLOR_ORIGINAL)
-            spriteData.put(Graphics.COLOR_ORIGINAL, layerData)
+            layerData = LayerData(Graphics.COLOR_DEFAULT)
+            spriteData.put(Graphics.COLOR_DEFAULT, layerData)
             layerData.setDimensions(width, height)
         }
         return layerData

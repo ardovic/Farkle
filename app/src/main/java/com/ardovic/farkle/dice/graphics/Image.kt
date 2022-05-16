@@ -12,14 +12,14 @@ class Image constructor(leftX: Int, topY: Int, width: Int, height: Int, resID: I
         this.resID = resID
     }
 
-    private fun mirrorHorizontal(): Image {
+    fun mirrorHorizontal(): Image {
         val temp = srcRect.right
         srcRect.right = srcRect.left
         srcRect.left = temp
         return this
     }
 
-    private fun mirrorVertical(): Image {
+    fun mirrorVertical(): Image {
         val temp = srcRect.bottom
         srcRect.bottom = srcRect.top
         srcRect.top = temp

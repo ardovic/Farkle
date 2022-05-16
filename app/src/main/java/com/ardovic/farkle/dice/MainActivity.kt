@@ -8,17 +8,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.ardovic.farkle.dice.MainActivity.State.*
 import com.ardovic.farkle.dice.delegates.SystemDelegate
+import com.ardovic.farkle.dice.engine.Drawable
 import com.ardovic.farkle.dice.game.*
 import com.ardovic.farkle.dice.game.Button.*
 import com.ardovic.farkle.dice.game.Button.Id.*
 import com.ardovic.farkle.dice.game.tank.TankComposite
 import com.ardovic.farkle.dice.graphics.Graphics
-import com.ardovic.farkle.dice.opengl.Drawer
-import com.ardovic.farkle.dice.opengl.Renderer
+import com.ardovic.farkle.dice.engine.opengl.FrameDrawer
+import com.ardovic.farkle.dice.engine.opengl.Renderer
 import javax.microedition.khronos.opengles.GL10
 import kotlin.random.Random
 
-class MainActivity : AppCompatActivity(), Drawer {
+class MainActivity : AppCompatActivity(), FrameDrawer {
 
     private lateinit var rootLayout: FrameLayout
 
@@ -128,7 +129,7 @@ class MainActivity : AppCompatActivity(), Drawer {
                         }
                     }
                 }
-                activeButton?.apply { color = Graphics.COLOR_ORIGINAL }
+                activeButton?.apply { color = Graphics.COLOR_DEFAULT }
             }
         }
 

@@ -1,7 +1,8 @@
 package com.ardovic.farkle.dice.game
 
 import com.ardovic.farkle.dice.C
-import com.ardovic.farkle.dice.opengl.Renderer
+import com.ardovic.farkle.dice.engine.GameObject
+import com.ardovic.farkle.dice.engine.opengl.Renderer
 
 class Sands : GameObject() {
 

@@ -1,39 +1,22 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import android.graphics.Rect
-import java.util.ArrayList
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
-class LayerData internal constructor(argb: Int) {
-    private val vertices: ArrayList<Float>
-    private val indices: ArrayList<Short>
-    private val coordinates: ArrayList<Float>
+class LayerData internal constructor(val argb: Int) {
+
+    private val vertices: ArrayList<Float> = ArrayList()
+    private val indices: ArrayList<Short> = ArrayList()
+    private val coordinates: ArrayList<Float> = ArrayList()
     private var textureWidth = 0
     private var textureHeight = 0
-    val aRGB: Int
+
     fun setDimensions(width: Int, height: Int) {
         textureWidth = width
         textureHeight = height
-    }
-
-    protected fun addVertices(vertices: FloatArray) {
-        val arrayLength = vertices.size
-        for (i in 0 until arrayLength) {
-            this.vertices.add(vertices[i])
-        }
-    }
-
-    protected fun addIndices(indices: ShortArray) {
-        val arrayLength = indices.size
-        for (i in 0 until arrayLength) {
-            this.indices.add(indices[i])
-        }
-    }
-
-    protected fun addCoordinates(coordinates: FloatArray) {
-        val arrayLength = coordinates.size
-        for (i in 0 until arrayLength) {
-            this.coordinates.add(coordinates[i])
-        }
     }
 
     fun addSprite(src: Rect, dst: Rect) {
@@ -75,8 +58,8 @@ class LayerData internal constructor(argb: Int) {
     }
 
     fun addSprite(src: Rect, dst: Rect, angle: Int) {
-        val cos = Math.cos(angle.toDouble() / 180 * Math.PI)
-        val sin = Math.sin(angle.toDouble() / 180 * Math.PI)
+        val cos = cos(angle.toDouble() / 180 * Math.PI)
+        val sin = sin(angle.toDouble() / 180 * Math.PI)
         val halfWidth = (dst.right - dst.left) / 2f
         val halfHeight = (dst.top - dst.bottom) / 2f
         val hotX = floatArrayOf(-halfWidth, -halfWidth, halfWidth, halfWidth)
@@ -124,8 +107,8 @@ class LayerData internal constructor(argb: Int) {
         sizeX: Float,
         sizeY: Float
     ) {
-        val cos = Math.cos(angle.toDouble() / 180 * Math.PI)
-        val sin = Math.sin(angle.toDouble() / 180 * Math.PI)
+        val cos = cos(angle.toDouble() / 180 * Math.PI)
+        val sin = sin(angle.toDouble() / 180 * Math.PI)
         val hotX = floatArrayOf(
             hotRect.left.toFloat(),
             hotRect.left.toFloat(),
@@ -167,9 +150,9 @@ class LayerData internal constructor(argb: Int) {
     }
 
     fun drawLine(src: Rect, x1: Int, y1: Int, x2: Int, y2: Int, width: Int) {
-        val angle = Math.atan2((y2 - y1).toDouble(), (x2 - x1).toDouble())
-        val sinAngleOffset = (Math.sin(angle) * width / 2).toInt()
-        val cosAngleOffset = (Math.cos(angle) * width / 2).toInt()
+        val angle = atan2((y2 - y1).toDouble(), (x2 - x1).toDouble())
+        val sinAngleOffset = (sin(angle) * width / 2).toInt()
+        val cosAngleOffset = (cos(angle) * width / 2).toInt()
         vertices.add((x1 + sinAngleOffset).toFloat())
         vertices.add((y1 - cosAngleOffset).toFloat())
         vertices.add(0f)
@@ -189,8 +172,7 @@ class LayerData internal constructor(argb: Int) {
         indices.add((lastValue + 1).toShort())
         indices.add((lastValue + 3).toShort())
         indices.add((lastValue + 4).toShort())
-        val length = Math.sqrt(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)).toDouble())
-            .toInt()
+        val length = sqrt(((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)).toDouble()).toInt()
         val textureLength = src.right - src.left
         val nWrap = length / textureLength
         val u = floatArrayOf(0f, 0f, nWrap.toFloat(), nWrap.toFloat())
@@ -258,7 +240,7 @@ class LayerData internal constructor(argb: Int) {
         get() = convertToPrimitive(coordinates.toTypedArray())
 
     private fun convertToPrimitive(objectArray: Array<Float>?): FloatArray? {
-        if (objectArray == null || objectArray.size == 0) {
+        if (objectArray == null || objectArray.isEmpty()) {
             return null
         }
         val objectArrayLength = objectArray.size
@@ -270,7 +252,7 @@ class LayerData internal constructor(argb: Int) {
     }
 
     private fun convertToPrimitive(objectArray: Array<Short>?): ShortArray? {
-        if (objectArray == null || objectArray.size == 0) {
+        if (objectArray == null || objectArray.isEmpty()) {
             return null
         }
         val objectArrayLength = objectArray.size
@@ -281,10 +263,4 @@ class LayerData internal constructor(argb: Int) {
         return primitiveArray
     }
 
-    init {
-        vertices = ArrayList()
-        indices = ArrayList()
-        coordinates = ArrayList()
-        aRGB = argb
-    }
 }

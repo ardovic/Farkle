@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import java.util.ArrayList
 

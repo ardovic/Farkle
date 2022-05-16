@@ -4,26 +4,18 @@ import com.ardovic.farkle.dice.MainActivity
 import android.widget.FrameLayout
 import android.view.WindowManager
 import com.ardovic.farkle.dice.C
-import com.ardovic.farkle.dice.opengl.FontParams
+import com.ardovic.farkle.dice.engine.opengl.FontParams
 import android.opengl.GLSurfaceView
 import android.graphics.PixelFormat
-import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Point
-import android.os.Build
-import android.view.View
-import android.view.WindowInsets
-import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.ardovic.farkle.dice.R
 import com.ardovic.farkle.dice.graphics.Graphics
-import com.ardovic.farkle.dice.opengl.Renderer
-import java.util.ArrayList
+import com.ardovic.farkle.dice.engine.opengl.Renderer
 
 object SystemDelegate {
 

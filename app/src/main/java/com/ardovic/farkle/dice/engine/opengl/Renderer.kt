@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.opengl
+package com.ardovic.farkle.dice.engine.opengl
 
 import android.content.Context
 import android.content.res.Resources
@@ -19,7 +19,7 @@ import java.util.ArrayList
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class Renderer(private val context: Context, resourceIds: IntArray, private val drawer: Drawer) :
+class Renderer(private val context: Context, resourceIds: IntArray, private val frameDrawer: FrameDrawer) :
     GLSurfaceView.Renderer {
 
     private var lastTime: Long = 0
@@ -76,7 +76,7 @@ class Renderer(private val context: Context, resourceIds: IntArray, private val 
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT or GL10.GL_DEPTH_BUFFER_BIT)
         gl.glLoadIdentity()
         gl.glRotatef(-180f, 1f, 0f, 0f)
-        drawer.onDrawFrame(gl, this)
+        frameDrawer.onDrawFrame(gl, this)
         batchDraw(gl)
     }
 
@@ -137,7 +137,7 @@ class Renderer(private val context: Context, resourceIds: IntArray, private val 
                     val textureBuffer = tbb.asFloatBuffer()
                     textureBuffer.put(textureCoords)
                     textureBuffer.position(0)
-                    val color = currentLayerData.aRGB
+                    val color = currentLayerData.argb
                     val r = Color.red(color).toFloat() / 255
                     val g = Color.green(color).toFloat() / 255
                     val b = Color.blue(color).toFloat() / 255
@@ -194,7 +194,7 @@ class Renderer(private val context: Context, resourceIds: IntArray, private val 
     }
 
     fun drawText(resourceId: Int, text: String?, x: Int, y: Int, scale: Float, centered: Boolean) {
-        drawText(resourceId, text, x, y, scale, Graphics.COLOR_ORIGINAL, centered)
+        drawText(resourceId, text, x, y, scale, Graphics.COLOR_DEFAULT, centered)
     }
 
     fun drawText(

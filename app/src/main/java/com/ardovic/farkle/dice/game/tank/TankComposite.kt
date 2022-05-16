@@ -1,14 +1,10 @@
 package com.ardovic.farkle.dice.game.tank
 
 import com.ardovic.farkle.dice.C
-import com.ardovic.farkle.dice.game.Drawable
-import com.ardovic.farkle.dice.game.GameObject
+import com.ardovic.farkle.dice.engine.Drawable
+import com.ardovic.farkle.dice.engine.GameObject
 import com.ardovic.farkle.dice.graphics.Graphics
-import com.ardovic.farkle.dice.opengl.Renderer
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
-import kotlin.math.sqrt
+import com.ardovic.farkle.dice.engine.opengl.Renderer
 
 class TankComposite : Drawable {
 
