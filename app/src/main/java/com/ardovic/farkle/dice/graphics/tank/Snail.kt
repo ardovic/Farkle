@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.game.tank
+package com.ardovic.farkle.dice.graphics.tank
 
 import com.ardovic.farkle.dice.engine.GameObject
 import com.ardovic.farkle.dice.graphics.Graphics

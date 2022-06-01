@@ -7,6 +7,7 @@ object Graphics {
 
     val SPRITE_MAP: Int = R.drawable.sprite_map
     val SPRITE_MAP_1: Int = R.drawable.sprite_map_1
+    val SPACECRAFT: Int = R.drawable.spacecraft
 
     val ROBOTO_FONT: Int = R.string.roboto_medium
 
@@ -39,6 +40,19 @@ object Graphics {
     val barrel_side = Image(450, 0, 80, 60, SPRITE_MAP_1)
     val barrel_top = Image(530, 0, 60, 60, SPRITE_MAP_1)
     val barrel_flammable_sign = Image(590, 0, 40, 40, SPRITE_MAP_1)
+
+
+
+    val spaceship = Image(1848, 824, 200, 200, SPACECRAFT)
+    val planet = Image(0, 0, 500, 500, SPACECRAFT)
+    val oil = Image(1662, 264, 192, 192, SPACECRAFT)
+
+
+
+    val button_gas = Image(1948, 0, 100, 100, SPACECRAFT)
+    val button_ccw = Image(1948, 100, 100, 100, SPACECRAFT)
+    val button_cw = Image(1948, 100, 100, 100, SPACECRAFT).mirrorHorizontal()
+    val button_stop = Image(1948, 200, 100, 100, SPACECRAFT)
 
     val wall = Image(0, 2 * size, 32, 32, SPRITE_MAP)
 

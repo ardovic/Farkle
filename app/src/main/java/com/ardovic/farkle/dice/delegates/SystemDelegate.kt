@@ -42,6 +42,7 @@ object SystemDelegate {
             intArrayOf(
                 Graphics.SPRITE_MAP,
                 Graphics.SPRITE_MAP_1,
+                Graphics.SPACECRAFT,
                 Graphics.ROBOTO_FONT
             ),
             activity

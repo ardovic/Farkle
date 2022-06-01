@@ -1,7 +1,5 @@
 package com.ardovic.farkle.dice
 
-import android.content.res.Configuration
-
 object C {
 
     const val BUFFER_COUNT = 3
@@ -39,8 +37,5 @@ object C {
         deviceSixthX = deviceWidth / 6
         deviceFiveSixthsX = deviceWidth - deviceSixthX
 
-
-
     }
-
 }

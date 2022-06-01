@@ -1,4 +1,4 @@
-package com.ardovic.farkle.dice.game.tank
+package com.ardovic.farkle.dice.graphics.tank
 
 import com.ardovic.farkle.dice.C
 import com.ardovic.farkle.dice.engine.Drawable
@@ -32,7 +32,7 @@ class TankComposite : Drawable {
 
         objects = listOf(body, gun, snailL, snailR)
 
-        setCenterXY(C.deviceWidth / 2, C.deviceHeight - C.navBarHeight - 300)
+        setCenterXY(C.deviceWidth / 2, C.deviceHeight / 2)
         objects.forEach { it.setPivot(centerX, centerY) }
 
 
