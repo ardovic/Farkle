@@ -12,6 +12,7 @@ import com.ardovic.farkle.dice.engine.opengl.FrameDrawer
 import com.ardovic.farkle.dice.engine.opengl.Renderer
 import com.ardovic.farkle.dice.game.Game
 import com.ardovic.farkle.dice.game.Command
+import com.ardovic.farkle.dice.game.Spaceship
 import com.ardovic.farkle.dice.graphics.Button
 import javax.microedition.khronos.opengles.GL10
 
@@ -113,15 +114,22 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
                 // Assume 0, 0 Player -> Need to draw in center of screen
 
-                val offsetX = (game.player.x - entity.x).toInt()
-                val offsetY = (game.player.y - entity.y).toInt()
-
-                renderRect.left = C.deviceCenterX - entity.radius - offsetX
-                renderRect.top = C.deviceCenterY - entity.radius - offsetY
-                renderRect.right = C.deviceCenterX + entity.radius - offsetX
-                renderRect.bottom = C.deviceCenterY + entity.radius - offsetY
+                updateRenderRect(entity.x, entity.y, entity.radius)
 
                 entity.image?.let { renderer.draw(it, renderRect, entity.r) }
+
+                if(entity is Spaceship) {
+                    entity.image?.let {
+
+                        updateRenderRect(entity.rightCenterX, entity.rightCenterY, 10)
+
+                        renderer.draw(it, renderRect, entity.r)
+
+                        updateRenderRect(entity.leftCenterX, entity.leftCenterY, 10)
+
+                        renderer.draw(it, renderRect, entity.r)
+                    }
+                }
 
             }
         }
@@ -129,5 +137,18 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         buttons.forEach { it.draw(renderer) }
 
         renderer.batchDraw(gl) // Called each time a layer is needed
+    }
+
+    /**
+     * Call with x and y relative to player being at 0, 0
+     */
+    private fun updateRenderRect(x: Float, y: Float, radius: Int) {
+        val offsetX = (game.player.x - x).toInt()
+        val offsetY = (game.player.y - y).toInt()
+
+        renderRect.left = C.deviceCenterX - radius - offsetX
+        renderRect.top = C.deviceCenterY - radius - offsetY
+        renderRect.right = C.deviceCenterX + radius - offsetX
+        renderRect.bottom = C.deviceCenterY + radius - offsetY
     }
 }

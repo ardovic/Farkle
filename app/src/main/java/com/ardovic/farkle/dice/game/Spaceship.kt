@@ -1,30 +1,61 @@
 package com.ardovic.farkle.dice.game
 
+import android.graphics.Rect
+import com.ardovic.farkle.dice.game.task.Refuel
 import com.ardovic.farkle.dice.game.task.Task
+import com.ardovic.farkle.dice.game.util.EvictingQueue
 import com.ardovic.farkle.dice.graphics.Graphics.spaceship
 import java.util.*
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class Spaceship : Entity() {
+class Spaceship(private val isPlayer: Boolean) : Entity() {
 
-    var energy = 320
-    var maxEnergy = 500
+    // TODO move trigonometric stuff to an abstract class
+
+    private var rotationRadius = 0f
+    var leftCenterX = 0F
+    var leftCenterY = 0F
+    var rightCenterX = 0F
+    var rightCenterY = 0F
+
+    var energy = 500
+    var maxEnergy = 1500
+
     var visionRadius = 700
     var maxMemory = 3
 
-    var memory: MutableMap<Memo, Coordinate>
+    var memory: MutableMap<Memo, EvictingQueue<Coordinate>>
     var commands: List<Command> = emptyList() // Commands are applied every frame
-    var tasks: Queue<Task> = LinkedList() // Task is a long lasting complex operation
+    var tasks: LinkedList<Task> = LinkedList() // Task is a long lasting complex operation
+
 
     init {
         image = spaceship
-        memory = HashMap()
-        memory[Memo.ENERGY] = Coordinate(-200, 200)
+        memory = EnumMap(Memo::class.java)
+        memory[Memo.ENERGY] = EvictingQueue(maxMemory)
+    }
+
+    fun useMemoCoordinate(type: Memo): Coordinate? {
+        return memory[type]?.removeLastOrNull()
     }
 
     override fun update() {
         energy--
+
+        rotationRadius = maxSpeed * 60 // TODO why?
+        val modulusAngle = normalizedShipAngleDeg(r).toDouble()
+
+        leftCenterX = (x - sin(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
+        leftCenterY = (y - cos(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
+        rightCenterX = (x + sin(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
+        rightCenterY = (y + cos(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
+
+        if (!isPlayer && energy < 0.2 * maxEnergy && tasks.none { it is Refuel }) {
+            tasks.addFirst(Refuel(this))
+        }
 
         commands.forEach { nextMessage ->
             when (nextMessage) {

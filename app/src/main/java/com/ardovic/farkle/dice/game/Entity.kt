@@ -5,6 +5,8 @@ import com.ardovic.farkle.dice.graphics.Image
 
 abstract class Entity {
 
+    open val memoType: Memo = Memo.NOT_INTERESTING
+
     val rect = Rect()
         get() {
             field.left = x.toInt() - radius
