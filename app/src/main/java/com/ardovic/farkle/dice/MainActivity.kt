@@ -10,9 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.ardovic.farkle.dice.delegates.SystemDelegate
 import com.ardovic.farkle.dice.engine.opengl.FrameDrawer
 import com.ardovic.farkle.dice.engine.opengl.Renderer
-import com.ardovic.farkle.dice.game.Game
-import com.ardovic.farkle.dice.game.Command
-import com.ardovic.farkle.dice.game.Spaceship
+import com.ardovic.farkle.dice.game.*
 import com.ardovic.farkle.dice.graphics.Button
 import javax.microedition.khronos.opengles.GL10
 
@@ -67,6 +65,8 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
     private var playerCommands: List<Command> = emptyList()
 
+    private var oilToAdd: Oil? = null
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
         val touchX = event.x.toInt()
@@ -82,7 +82,21 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
                             Button.Type.CW -> listOf(Command.ROTATE_CW, Command.ACCELERATE)
                             Button.Type.CCW -> listOf(Command.ROTATE_CCW, Command.ACCELERATE)
                         }
-                    } ?: emptyList()
+                    } ?: run {
+
+                    oilToAdd = Oil().apply {
+                        radius = 25
+
+                        val coordinate = convertTouchToRealCoordinate(touchX, touchY)
+
+                        x = coordinate.x
+                        y = coordinate.y
+                    }
+
+
+                    return@run emptyList()
+                }
+
 
             }
             MotionEvent.ACTION_MOVE -> {}
@@ -94,8 +108,25 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         return true
     }
 
+    private fun convertTouchToRealCoordinate(touchX: Int, touchY: Int): Coordinate {
+        val offsetX = C.deviceCenterX - touchX
+        val offsetY = C.deviceCenterY - touchY
+
+        return Coordinate(
+            x = game.player.x - offsetX,
+            y = game.player.y - offsetY
+        )
+    }
+
+
     private fun update() {
         game.player.commands = playerCommands
+
+        if (oilToAdd != null) {
+            game.entities.add(oilToAdd!!)
+            oilToAdd = null
+        }
+
         game.update()
     }
 
@@ -109,6 +140,7 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
             bottom = (game.player.y + C.deviceCenterY).toInt()
         }
 
+
         game.entities.forEach { entity ->
             if (entity.rect.intersect(deviceRect)) {
 
@@ -118,7 +150,7 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
                 entity.image?.let { renderer.draw(it, renderRect, entity.r) }
 
-                if(entity is Spaceship) {
+                if (entity is Spaceship) {
                     entity.image?.let {
 
                         updateRenderRect(entity.rightCenterX, entity.rightCenterY, 10)

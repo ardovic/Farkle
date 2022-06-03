@@ -4,10 +4,11 @@ import com.ardovic.farkle.dice.game.task.CruiseTo
 import com.ardovic.farkle.dice.game.task.Refuel
 import com.ardovic.farkle.dice.game.util.EvictingQueue
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Game {
 
-    var entities: MutableSet<Entity> = HashSet()
+    var entities: MutableList<Entity> = ArrayList()
     var player: Spaceship
     private var lastOilAddedMillis: Long = 0
     private val random = Random()
@@ -18,16 +19,16 @@ class Game {
 
     fun update() {
 
-        if (lastOilAddedMillis < System.currentTimeMillis() - 10_000) {
-            lastOilAddedMillis = System.currentTimeMillis()
-
-            val oil = Oil()
-            oil.radius = 25
-            oil.x = (random.nextInt(2000) - 1000).toFloat()
-            oil.y = (random.nextInt(2000) - 1000).toFloat()
-            entities.add(oil)
-            println("Oil added to universe!")
-        }
+//        if (lastOilAddedMillis < System.currentTimeMillis() - 5_000) {
+//            lastOilAddedMillis = System.currentTimeMillis()
+//
+//            val oil = Oil()
+//            oil.radius = 25
+//            oil.x = (random.nextInt(2000) - 1000).toFloat()
+//            oil.y = (random.nextInt(2000) - 1000).toFloat()
+//            entities.add(oil)
+//            println("Oil added to universe!")
+//        }
 
         snaphotCooldown--
 
@@ -109,13 +110,13 @@ class Game {
         player.radius = 200
         entities.add(player)
 
-//        val npc = Spaceship(isPlayer = false)
-//        npc.radius = 150
-//        npc.x = -300f
-//        npc.y = -300f
-//        npc.r = -60
-//        npc.tasks.offer(CruiseTo(npc, 1000, 1000))
-//        npc.tasks.offer(CruiseTo(npc, 0, 0))
-//        entities.add(npc)
+        val npc = Spaceship(isPlayer = false)
+        npc.radius = 150
+        npc.x = -300f
+        npc.y = -300f
+        npc.r = -60
+        npc.tasks.offer(CruiseTo(npc, 1000, 1000))
+        npc.tasks.offer(CruiseTo(npc, 0, 0))
+        entities.add(npc)
     }
 }

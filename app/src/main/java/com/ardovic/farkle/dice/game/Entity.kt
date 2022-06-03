@@ -26,9 +26,11 @@ abstract class Entity {
             radians = Math.toRadians((r - 90).toDouble())
             field = value
         }
+    var dr = 1 // amount of angle change per update call
 
     var radians = 0.0
     var speed = 0f
+    var acceleration = 0.2f
     var maxSpeed = 5.0f
 
     abstract fun update()

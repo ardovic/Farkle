@@ -14,7 +14,7 @@ fun getRotationMessage(entity: Entity, targetX: Int, targetY: Int): Command {
     val targetAngleDeg = normalizedTargetAngleDeg(entity.x.toInt(), entity.y.toInt(), targetX, targetY)
 
     return if (isLookingAtTarget) {
-        entity.r = -targetAngleDeg
+        entity.r = denormalizeAngle(-targetAngleDeg)
         Command.ACCELERATE
     } else {
 
@@ -31,8 +31,14 @@ fun getRotationMessage(entity: Entity, targetX: Int, targetY: Int): Command {
     }
 }
 
+fun isHardArea(ship: Spaceship, targetX: Int, targetY: Int): Boolean {
+    val safeRotationRadius = ship.rotationRadius * 1.25F
+    return distance(targetX, targetY, ship.leftCenterX.toInt(), ship.leftCenterY.toInt()) < safeRotationRadius
+            || distance(targetX, targetY, ship.rightCenterX.toInt(), ship.rightCenterY.toInt()) < safeRotationRadius
+}
+
 private fun isLookingAtTarget(x: Int, y: Int, r: Int, targetX: Int, targetY: Int): Boolean {
-    return abs(normalizedShipAngleDeg(r) - normalizedTargetAngleDeg(x, y, targetX, targetY)) < 10
+    return abs(normalizedShipAngleDeg(r) - normalizedTargetAngleDeg(x, y, targetX, targetY)) < 5
 }
 
 // Returns normalized angle to target from center
@@ -46,8 +52,12 @@ fun normalizedShipAngleDeg(r: Int): Int {
     return modulusAngle(90 - r)
 }
 
+fun denormalizeAngle(normalizedAngle: Int): Int {
+    return modulusAngle(normalizedAngle + 90)
+}
+
 fun modulusAngle(angle: Int): Int {
-    var newAngle = angle
+    var newAngle = angle % 360
     if (newAngle < 0) newAngle += 360
     if (newAngle > 360) newAngle -= 360
     return newAngle

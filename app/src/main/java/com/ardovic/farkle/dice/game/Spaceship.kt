@@ -1,21 +1,18 @@
 package com.ardovic.farkle.dice.game
 
-import android.graphics.Rect
 import com.ardovic.farkle.dice.game.task.Refuel
 import com.ardovic.farkle.dice.game.task.Task
 import com.ardovic.farkle.dice.game.util.EvictingQueue
 import com.ardovic.farkle.dice.graphics.Graphics.spaceship
 import java.util.*
 import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class Spaceship(private val isPlayer: Boolean) : Entity() {
 
     // TODO move trigonometric stuff to an abstract class
 
-    private var rotationRadius = 0f
+    var rotationRadius = 0f
     var leftCenterX = 0F
     var leftCenterY = 0F
     var rightCenterX = 0F
@@ -45,7 +42,7 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
     override fun update() {
         energy--
 
-        rotationRadius = maxSpeed * 60 // TODO why?
+        rotationRadius = maxSpeed * 58 / dr // TODO why?
         val modulusAngle = normalizedShipAngleDeg(r).toDouble()
 
         leftCenterX = (x - sin(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
@@ -59,16 +56,16 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
 
         commands.forEach { nextMessage ->
             when (nextMessage) {
-                Command.ROTATE_CW -> r++
-                Command.ROTATE_CCW -> r--
+                Command.ROTATE_CW -> r += dr
+                Command.ROTATE_CCW -> r -= dr
                 Command.ACCELERATE -> {
-                    speed += 0.2f
+                    speed += acceleration
                     if (speed > maxSpeed) {
                         speed = maxSpeed
                     }
                 }
                 Command.DECELERATE -> {
-                    speed -= 0.2f
+                    speed -= acceleration
                     if (speed < 0) {
                         speed = 0f
                     }
