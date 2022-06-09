@@ -10,18 +10,20 @@ class CruiseTo(
     private val targetY: Int
 ) : Task {
 
-    private var hardAreaChecked = false;
+    private var hardAreaChecked = false
 
     override fun getSubTask(): Task? {
 
         if (!hardAreaChecked) {
             hardAreaChecked = true
 
-            if (isHardArea(ship, targetX, targetY)) {
+            val travelStraightBeforeTurn = travelStraightBeforeTurn(ship, targetX, targetY)
+
+            if (travelStraightBeforeTurn > 0) {
                 return CruiseTo(
                     ship,
-                    (ship.x + cos(ship.radians) * ship.maxSpeed * 200).toInt(),
-                    (ship.y + sin(ship.radians) * ship.maxSpeed * 200).toInt()
+                    (ship.x + cos(ship.radians) * travelStraightBeforeTurn).toInt(),
+                    (ship.y + sin(ship.radians) * travelStraightBeforeTurn).toInt()
                 )
             }
         }
@@ -38,7 +40,5 @@ class CruiseTo(
         }
     }
 
-    override fun isDone(): Boolean {
-        return ship.speed == 0f && distance(ship.x.toInt(), ship.y.toInt(), targetX, targetY) < 100
-    }
+    override fun isDone(): Boolean = ship.speed == 0f && distance(ship.x, ship.y, targetX, targetY) < ship.radius
 }

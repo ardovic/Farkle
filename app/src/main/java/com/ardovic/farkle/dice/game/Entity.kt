@@ -2,6 +2,7 @@ package com.ardovic.farkle.dice.game
 
 import android.graphics.Rect
 import com.ardovic.farkle.dice.graphics.Image
+import kotlin.math.roundToInt
 
 abstract class Entity {
 
@@ -9,18 +10,31 @@ abstract class Entity {
 
     val rect = Rect()
         get() {
-            field.left = x.toInt() - radius
-            field.top = y.toInt() - radius
-            field.right = x.toInt() + radius
-            field.bottom = y.toInt() + radius
+            field.left = x - radius
+            field.top = y - radius
+            field.right = x + radius
+            field.bottom = y + radius
             return field
         }
 
     var image: Image? = null
-    var x = 0f
-    var y = 0f
-    var radius = 0
+    var x: Int = 0
+    var y: Int = 0
+    var renderX: Double = 0.0
+        set(value) {
+            field = value
+            x = value.roundToInt()
+        }
 
+    var renderY: Double = 0.0
+        set(value) {
+            field = value
+            y = value.roundToInt()
+        }
+
+    var radius: Int = 0
+
+    var radians: Double = 0.0
     var r = 0
         set(value) {
             radians = Math.toRadians((r - 90).toDouble())
@@ -28,10 +42,9 @@ abstract class Entity {
         }
     var dr = 1 // amount of angle change per update call
 
-    var radians = 0.0
-    var speed = 0f
-    var acceleration = 0.2f
-    var maxSpeed = 5.0f
+    var speed: Float = 0f
+    var acceleration: Float = 0.2f
+    var maxSpeed: Float = 5f
 
     abstract fun update()
 

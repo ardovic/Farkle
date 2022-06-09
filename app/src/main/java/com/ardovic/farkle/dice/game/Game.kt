@@ -17,18 +17,11 @@ class Game {
 
     var entitiesToRemove: MutableSet<Entity> = mutableSetOf()
 
-    fun update() {
+    fun update(touchCoordinate: Coordinate?) {
 
-//        if (lastOilAddedMillis < System.currentTimeMillis() - 5_000) {
-//            lastOilAddedMillis = System.currentTimeMillis()
-//
-//            val oil = Oil()
-//            oil.radius = 25
-//            oil.x = (random.nextInt(2000) - 1000).toFloat()
-//            oil.y = (random.nextInt(2000) - 1000).toFloat()
-//            entities.add(oil)
-//            println("Oil added to universe!")
-//        }
+
+        touchCoordinate?.let { player.tasks.add(CruiseTo(player, it.x, it.y)) }
+
 
         snaphotCooldown--
 
@@ -61,21 +54,6 @@ class Game {
                     }
                 }
 
-                entities.forEach { other ->
-                    if (other.memoType != Memo.NOT_INTERESTING && distance(entity.x, entity.y, other.x, other.y) <= entity.visionRadius) {
-
-                        val coordinate = Coordinate(other.x, other.y)
-
-                        if (entity.memory[other.memoType] == null) {
-                            entity.memory[other.memoType] = EvictingQueue(entity.maxMemory)
-                        }
-                        if (!entity.memory[other.memoType]!!.contains(coordinate)) {
-                            entity.memory[other.memoType]!!.add(coordinate)
-                        }
-
-                    }
-                }
-
 
                 if (entity.tasks.isNotEmpty()) {
                     val currentTask = entity.tasks.first()
@@ -102,21 +80,21 @@ class Game {
         planet.radius = 500
         planet.speed = 0.2f
         planet.r = 45
-        planet.x = -300f
-        planet.y = -300f
+        planet.x = -300
+        planet.y = -300
         entities.add(planet)
 
         player = Spaceship(isPlayer = true)
-        player.radius = 200
+        player.radius = 100
         entities.add(player)
 
         val npc = Spaceship(isPlayer = false)
-        npc.radius = 150
-        npc.x = -300f
-        npc.y = -300f
+        npc.radius = 60
+        npc.x = -300
+        npc.y = -300
         npc.r = -60
-        npc.tasks.offer(CruiseTo(npc, 1000, 1000))
-        npc.tasks.offer(CruiseTo(npc, 0, 0))
+        npc.tasks.offer(CruiseTo(npc, 100000000, 10000000))
+        //npc.tasks.offer(CruiseTo(npc, 0, 0))
         entities.add(npc)
     }
 }

@@ -12,17 +12,17 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
 
     // TODO move trigonometric stuff to an abstract class
 
-    var rotationRadius = 0f
-    var leftCenterX = 0F
-    var leftCenterY = 0F
-    var rightCenterX = 0F
-    var rightCenterY = 0F
+    var rotationRadius: Int = 0
+    var leftCenterX: Int = 0
+    var leftCenterY: Int = 0
+    var rightCenterX: Int = 0
+    var rightCenterY: Int = 0
 
-    var energy = 500
-    var maxEnergy = 1500
+    var energy: Int = 500
+    var maxEnergy: Int = 1500
 
-    var visionRadius = 700
-    var maxMemory = 3
+    var visionRadius: Int = 700
+    var maxMemory: Int = 3
 
     var memory: MutableMap<Memo, EvictingQueue<Coordinate>>
     var commands: List<Command> = emptyList() // Commands are applied every frame
@@ -42,17 +42,17 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
     override fun update() {
         energy--
 
-        rotationRadius = maxSpeed * 58 / dr // TODO why?
+        rotationRadius = (maxSpeed * 58 / dr).toInt() // TODO why?
         val modulusAngle = normalizedShipAngleDeg(r).toDouble()
 
-        leftCenterX = (x - sin(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
-        leftCenterY = (y - cos(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
-        rightCenterX = (x + sin(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
-        rightCenterY = (y + cos(Math.toRadians(modulusAngle)) * rotationRadius).toFloat()
+        leftCenterX = (x - sin(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
+        leftCenterY = (y - cos(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
+        rightCenterX = (x + sin(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
+        rightCenterY = (y + cos(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
 
-        if (!isPlayer && energy < 0.2 * maxEnergy && tasks.none { it is Refuel }) {
-            tasks.addFirst(Refuel(this))
-        }
+//        if (!isPlayer && energy < 0.2 * maxEnergy && tasks.none { it is Refuel }) {
+//            tasks.addFirst(Refuel(this))
+//        }
 
         commands.forEach { nextMessage ->
             when (nextMessage) {
@@ -74,8 +74,8 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
         }
 
         if (speed > 0) {
-            x += (cos(radians) * speed).toFloat()
-            y += (sin(radians) * speed).toFloat()
+            renderX += cos(radians) * speed
+            renderY += sin(radians) * speed
         }
     }
 }

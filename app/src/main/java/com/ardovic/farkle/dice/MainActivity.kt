@@ -16,14 +16,12 @@ import javax.microedition.khronos.opengles.GL10
 
 class MainActivity : AppCompatActivity(), FrameDrawer {
 
-    private var setupComplete: Boolean = false
-
-    lateinit var buttons: List<Button>
     lateinit var game: Game
 
-    private val renderRect = Rect()
-    private val playerRect: Rect = Rect()
+    private val renderRect: Rect = Rect()
     private val deviceRect: Rect = Rect()
+
+    private var touchCoordinate: Coordinate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.GameTheme)
@@ -36,36 +34,15 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         game = Game()
 
 
+
+
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { _, insets ->
-            if (!setupComplete) {
-
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                C.statusBarHeight = systemBars.top
-                C.navBarHeight = systemBars.bottom
-
-                buttons = listOf(
-                    Button(Button.Type.CCW),
-                    Button(Button.Type.CW),
-                    Button(Button.Type.GAS),
-                    Button(Button.Type.BREAK)
-                )
-
-                playerRect.apply {
-                    left = C.deviceCenterX - 100
-                    top = C.deviceCenterY - 100
-                    right = C.deviceCenterX + 100
-                    bottom = C.deviceCenterY + 100
-                }
-
-                setupComplete = true
-            }
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            C.statusBarHeight = systemBars.top
+            C.navBarHeight = systemBars.bottom
             insets
         }
     }
-
-    private var playerCommands: List<Command> = emptyList()
-
-    private var oilToAdd: Oil? = null
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
@@ -73,35 +50,10 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         val touchY = event.y.toInt()
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                playerCommands = buttons.firstOrNull { it.rect.contains(touchX, touchY) }
-                    ?.let {
-                        when (it.type) {
-                            Button.Type.BREAK -> listOf(Command.DECELERATE)
-                            Button.Type.GAS -> listOf(Command.ACCELERATE)
-                            Button.Type.CW -> listOf(Command.ROTATE_CW, Command.ACCELERATE)
-                            Button.Type.CCW -> listOf(Command.ROTATE_CCW, Command.ACCELERATE)
-                        }
-                    } ?: run {
-
-                    oilToAdd = Oil().apply {
-                        radius = 25
-
-                        val coordinate = convertTouchToRealCoordinate(touchX, touchY)
-
-                        x = coordinate.x
-                        y = coordinate.y
-                    }
-
-
-                    return@run emptyList()
-                }
-
-
-            }
+            MotionEvent.ACTION_DOWN -> {}
             MotionEvent.ACTION_MOVE -> {}
             MotionEvent.ACTION_UP -> {
-                playerCommands = emptyList()
+                touchCoordinate = convertTouchToRealCoordinate(touchX, touchY)
             }
         }
 
@@ -120,24 +72,18 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
 
     private fun update() {
-        game.player.commands = playerCommands
-
-        if (oilToAdd != null) {
-            game.entities.add(oilToAdd!!)
-            oilToAdd = null
-        }
-
-        game.update()
+        game.update(touchCoordinate)
+        touchCoordinate = null
     }
 
     override fun onDrawFrame(gl: GL10, renderer: Renderer) {
         update()
 
         deviceRect.apply {
-            left = (game.player.x - C.deviceCenterX).toInt()
-            top = (game.player.y - C.deviceCenterY).toInt()
-            right = (game.player.x + C.deviceCenterX).toInt()
-            bottom = (game.player.y + C.deviceCenterY).toInt()
+            left = (game.player.x - C.deviceCenterX)
+            top = (game.player.y - C.deviceCenterY)
+            right = (game.player.x + C.deviceCenterX)
+            bottom = (game.player.y + C.deviceCenterY)
         }
 
 
@@ -166,7 +112,6 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
             }
         }
 
-        buttons.forEach { it.draw(renderer) }
 
         renderer.batchDraw(gl) // Called each time a layer is needed
     }
@@ -174,9 +119,9 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
     /**
      * Call with x and y relative to player being at 0, 0
      */
-    private fun updateRenderRect(x: Float, y: Float, radius: Int) {
-        val offsetX = (game.player.x - x).toInt()
-        val offsetY = (game.player.y - y).toInt()
+    private fun updateRenderRect(x: Int, y: Int, radius: Int) {
+        val offsetX = (game.player.x - x)
+        val offsetY = (game.player.y - y)
 
         renderRect.left = C.deviceCenterX - radius - offsetX
         renderRect.top = C.deviceCenterY - radius - offsetY
