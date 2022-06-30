@@ -40,7 +40,7 @@ abstract class Entity {
             radians = Math.toRadians((r - 90).toDouble())
             field = value
         }
-    var dr = 1 // amount of angle change per update call
+    var dr = 2 // amount of angle change per update call
 
     var speed: Float = 0f
     var acceleration: Float = 0.2f

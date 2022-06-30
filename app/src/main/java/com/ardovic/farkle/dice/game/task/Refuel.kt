@@ -5,12 +5,13 @@ import com.ardovic.farkle.dice.game.Memo
 import com.ardovic.farkle.dice.game.Spaceship
 
 class Refuel(
-    private val ship: Spaceship
-) : Task {
+    private val ship: Spaceship,
+    parentTask: Task? = null
+) : Task(parentTask) {
 
     override fun getSubTask(): Task? {
         return ship.useMemoCoordinate(Memo.ENERGY)
-            ?.let { coordinate -> CruiseTo(ship, coordinate.x.toInt(), coordinate.y.toInt()) }
+            ?.let { coordinate -> CruiseTo(ship, coordinate.x, coordinate.y, this) }
     }
 
     override fun getCommands(): List<Command> {

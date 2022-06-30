@@ -23,6 +23,8 @@ object C {
     var navBarHeight: Int = 0
     var statusBarHeight: Int = 0
 
+    var buttonSize: Int = 0
+
     fun initialize(deviceWidth: Int, deviceHeight: Int, isPortraitOrientation: Boolean) {
         this.deviceWidth = deviceWidth
         this.deviceHeight = deviceHeight
@@ -36,6 +38,10 @@ object C {
 
         deviceSixthX = deviceWidth / 6
         deviceFiveSixthsX = deviceWidth - deviceSixthX
+
+
+        // Temporary sizing, improve in the future
+        buttonSize = deviceWidth / 8
 
     }
 }

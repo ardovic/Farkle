@@ -2,11 +2,13 @@ package com.ardovic.farkle.dice.game.task
 
 import com.ardovic.farkle.dice.game.Command
 
-interface Task {
+sealed class Task(private val parentTask: Task? = null) {
 
-    fun getSubTask(): Task? = null
+    fun isParentTaskDone(): Boolean = parentTask?.isDone() ?: false
 
-    fun getCommands(): List<Command>
+    open fun getSubTask(): Task? = null
 
-    fun isDone(): Boolean
+    abstract fun getCommands(): List<Command>
+
+    abstract fun isDone(): Boolean
 }

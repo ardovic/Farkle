@@ -44,15 +44,21 @@ object Graphics {
 
 
     val spaceship = Image(1848, 824, 200, 200, SPACECRAFT)
+    val spaceship_1 = Image(1898, 0, 150, 150, SPACECRAFT)
     val planet = Image(0, 0, 500, 500, SPACECRAFT)
-    val oil = Image(1662, 264, 192, 192, SPACECRAFT)
+    val oil = Image(1662, 264, 190, 190, SPACECRAFT)
 
 
 
-    val button_gas = Image(1948, 0, 100, 100, SPACECRAFT)
-    val button_ccw = Image(1948, 100, 100, 100, SPACECRAFT)
-    val button_cw = Image(1948, 100, 100, 100, SPACECRAFT).mirrorHorizontal()
-    val button_stop = Image(1948, 200, 100, 100, SPACECRAFT)
+    val bttn_single_tap = Image(1948, 150, 100, 100, SPACECRAFT)
+    val bttn_double_tap = Image(1948, 250, 100, 100, SPACECRAFT)
+    val bttn_macro_controls = Image(1948, 350, 100, 100, SPACECRAFT)
+    val bttn_micro_controls = Image(1948, 450, 100, 100, SPACECRAFT)
+    val bttn_accelerate = Image(1948, 550, 100, 100, SPACECRAFT)
+    val bttn_brake = Image(1948, 650, 100, 100, SPACECRAFT)
+    val bttn_turn_ccw = Image(1848, 250, 100, 100, SPACECRAFT)
+    val bttn_turn_cw = Image(1848, 350, 100, 100, SPACECRAFT)
+
 
     val wall = Image(0, 2 * size, 32, 32, SPRITE_MAP)
 

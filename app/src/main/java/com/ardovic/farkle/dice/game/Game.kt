@@ -20,7 +20,14 @@ class Game {
     fun update(touchCoordinate: Coordinate?) {
 
 
-        touchCoordinate?.let { player.tasks.add(CruiseTo(player, it.x, it.y)) }
+        touchCoordinate?.let {
+            player.tasks.add(CruiseTo(player, it.x, it.y))
+            entities.add(Oil().apply {
+                radius = 30
+                x = touchCoordinate.x
+                y = touchCoordinate.y
+            })
+        }
 
 
         snaphotCooldown--
@@ -54,15 +61,19 @@ class Game {
                     }
                 }
 
-
+                /**
+                 * At last we want to update tasks and commands for all entities
+                 */
                 if (entity.tasks.isNotEmpty()) {
                     val currentTask = entity.tasks.first()
                     val subTask = currentTask.getSubTask()
                     when {
-                        currentTask.isDone() -> entity.tasks.remove(currentTask)
+                        currentTask.isParentTaskDone() || currentTask.isDone() -> entity.tasks.remove(currentTask)
                         subTask != null -> entity.tasks.addFirst(subTask)
                         else -> entity.commands = currentTask.getCommands()
                     }
+                } else {
+                    entity.commands = listOf(Command.DECELERATE)
                 }
             }
             entity.update()
@@ -93,8 +104,11 @@ class Game {
         npc.x = -300
         npc.y = -300
         npc.r = -60
-        npc.tasks.offer(CruiseTo(npc, 100000000, 10000000))
-        //npc.tasks.offer(CruiseTo(npc, 0, 0))
+        npc.tasks.offer(CruiseTo(npc, 1000, 1000))
+        npc.tasks.offer(CruiseTo(npc, 0, 0))
+        npc.tasks.offer(CruiseTo(npc, -100, 200))
+        npc.tasks.offer(CruiseTo(npc, 400, -600))
+        npc.tasks.offer(CruiseTo(npc, 0, 0))
         entities.add(npc)
     }
 }

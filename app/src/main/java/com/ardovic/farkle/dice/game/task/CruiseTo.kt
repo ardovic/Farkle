@@ -7,8 +7,9 @@ import kotlin.math.sin
 class CruiseTo(
     private val ship: Spaceship,
     private val targetX: Int,
-    private val targetY: Int
-) : Task {
+    private val targetY: Int,
+    parentTask: Task? = null
+) : Task(parentTask) {
 
     private var hardAreaChecked = false
 
@@ -23,7 +24,8 @@ class CruiseTo(
                 return CruiseTo(
                     ship,
                     (ship.x + cos(ship.radians) * travelStraightBeforeTurn).toInt(),
-                    (ship.y + sin(ship.radians) * travelStraightBeforeTurn).toInt()
+                    (ship.y + sin(ship.radians) * travelStraightBeforeTurn).toInt(),
+                    this
                 )
             }
         }

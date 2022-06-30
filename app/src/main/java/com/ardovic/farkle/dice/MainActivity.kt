@@ -2,6 +2,7 @@ package com.ardovic.farkle.dice
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.view.InputEvent
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +11,11 @@ import androidx.core.view.WindowInsetsCompat
 import com.ardovic.farkle.dice.delegates.SystemDelegate
 import com.ardovic.farkle.dice.engine.opengl.FrameDrawer
 import com.ardovic.farkle.dice.engine.opengl.Renderer
-import com.ardovic.farkle.dice.game.*
+import com.ardovic.farkle.dice.game.Command
+import com.ardovic.farkle.dice.game.Coordinate
+import com.ardovic.farkle.dice.game.Game
+import com.ardovic.farkle.dice.game.Spaceship
+import com.ardovic.farkle.dice.game.task.*
 import com.ardovic.farkle.dice.graphics.Button
 import javax.microedition.khronos.opengles.GL10
 
@@ -18,10 +23,13 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
     lateinit var game: Game
 
+    private var gameState: GameState = GameState.RoamState.MacroControlsState // Default state
+
     private val renderRect: Rect = Rect()
     private val deviceRect: Rect = Rect()
 
     private var touchCoordinate: Coordinate? = null
+    private var touchedButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.GameTheme)
@@ -32,9 +40,6 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         SystemDelegate.onCreateBgViewReturn(this, rootLayout)
 
         game = Game()
-
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -50,10 +55,58 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         val touchY = event.y.toInt()
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {}
+            MotionEvent.ACTION_DOWN -> {
+                when (gameState) {
+                    is GameState.RoamState -> {
+                        when (gameState) {
+                            GameState.RoamState.MicroControlsState -> {
+                                Button.microControlButtons.firstOrNull { it.rect.contains(touchX, touchY) }
+                                    ?.let { button ->
+                                        touchedButton = button
+                                        if (button.type != Button.Type.MACRO_CONTROLS) {
+                                            game.player.tasks.clear()
+                                            when (button.type) {
+                                                Button.Type.TURN_CCW -> game.player.tasks.add(TurnCWWTask)
+                                                Button.Type.TURN_CW -> game.player.tasks.add(TurnCWTask)
+                                                Button.Type.BREAK -> game.player.tasks.add(DecelerateTask)
+                                                Button.Type.ACCELERATE -> game.player.tasks.add(AccelerateTask)
+                                                else -> {}
+                                            }
+                                        }
+                                    }
+
+                            }
+                            GameState.RoamState.MacroControlsState -> {
+                                touchedButton = Button.macroControlButtons.firstOrNull { it.rect.contains(touchX, touchY) }
+                            }
+                        }
+                    }
+                }
+            }
             MotionEvent.ACTION_MOVE -> {}
             MotionEvent.ACTION_UP -> {
-                touchCoordinate = convertTouchToRealCoordinate(touchX, touchY)
+                touchedButton?.let {
+                    if (Button.microControlButtons.contains(it) && it.type != Button.Type.MACRO_CONTROLS) {
+                        game.player.tasks.clear()
+                        game.player.tasks.add(InertiaTask)
+                    }
+                    if (it.rect.contains(touchX, touchY)) {
+                        when (it.type) {
+                            Button.Type.SINGLE_TAP -> {}
+                            Button.Type.DOUBLE_TAP -> {}
+                            Button.Type.MICRO_CONTROLS -> {
+                                gameState = GameState.RoamState.MicroControlsState
+                            }
+                            Button.Type.MACRO_CONTROLS -> {
+                                gameState = GameState.RoamState.MacroControlsState
+                            }
+                        }
+                    }
+                } ?: run {
+                    game.player.tasks.clear()
+                    touchCoordinate = convertTouchToRealCoordinate(touchX, touchY)
+                }
+                touchedButton = null
             }
         }
 
@@ -79,6 +132,30 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
     override fun onDrawFrame(gl: GL10, renderer: Renderer) {
         update()
 
+        when (gameState) {
+            is GameState.RoamState -> {
+                renderRoamState(renderer)
+                renderer.batchDraw(gl) // Called each time a layer is needed
+                when (gameState) {
+                    GameState.RoamState.MicroControlsState -> {
+                        Button.microControlButtons.forEach { button ->
+                            updateRenderRect(button.rect)
+                            button.draw(renderer)
+                        }
+                    }
+                    GameState.RoamState.MacroControlsState -> {
+                        Button.macroControlButtons.forEach { button ->
+                            updateRenderRect(button.rect)
+                            button.draw(renderer)
+                        }
+                    }
+                }
+                renderer.batchDraw(gl) // Called each time a layer is needed
+            }
+        }
+    }
+
+    private fun renderRoamState(renderer: Renderer) {
         deviceRect.apply {
             left = (game.player.x - C.deviceCenterX)
             top = (game.player.y - C.deviceCenterY)
@@ -111,9 +188,6 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
 
             }
         }
-
-
-        renderer.batchDraw(gl) // Called each time a layer is needed
     }
 
     /**
@@ -127,5 +201,16 @@ class MainActivity : AppCompatActivity(), FrameDrawer {
         renderRect.top = C.deviceCenterY - radius - offsetY
         renderRect.right = C.deviceCenterX + radius - offsetX
         renderRect.bottom = C.deviceCenterY + radius - offsetY
+    }
+
+    private fun updateRenderRect(left: Int, top: Int, right: Int, bottom: Int) {
+        renderRect.left = left
+        renderRect.top = top
+        renderRect.right = right
+        renderRect.bottom = bottom
+    }
+
+    private fun updateRenderRect(rect: Rect) {
+        updateRenderRect(rect.left, rect.top, rect.right, rect.bottom)
     }
 }

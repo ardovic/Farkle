@@ -4,6 +4,7 @@ import com.ardovic.farkle.dice.game.task.Refuel
 import com.ardovic.farkle.dice.game.task.Task
 import com.ardovic.farkle.dice.game.util.EvictingQueue
 import com.ardovic.farkle.dice.graphics.Graphics.spaceship
+import com.ardovic.farkle.dice.graphics.Graphics.spaceship_1
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -25,12 +26,16 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
     var maxMemory: Int = 3
 
     var memory: MutableMap<Memo, EvictingQueue<Coordinate>>
-    var commands: List<Command> = emptyList() // Commands are applied every frame
+    var commands: List<Command>? = null // Commands are applied every frame
     var tasks: LinkedList<Task> = LinkedList() // Task is a long lasting complex operation
 
 
     init {
-        image = spaceship
+        image = if(isPlayer) {
+            spaceship
+        } else {
+            spaceship_1
+        }
         memory = EnumMap(Memo::class.java)
         memory[Memo.ENERGY] = EvictingQueue(maxMemory)
     }
@@ -50,11 +55,11 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
         rightCenterX = (x + sin(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
         rightCenterY = (y + cos(Math.toRadians(modulusAngle)) * rotationRadius).toInt()
 
-//        if (!isPlayer && energy < 0.2 * maxEnergy && tasks.none { it is Refuel }) {
-//            tasks.addFirst(Refuel(this))
-//        }
+        if (!isPlayer && energy < 0.2 * maxEnergy && tasks.none { it is Refuel }) {
+            tasks.addFirst(Refuel(this))
+        }
 
-        commands.forEach { nextMessage ->
+        commands?.forEach { nextMessage ->
             when (nextMessage) {
                 Command.ROTATE_CW -> r += dr
                 Command.ROTATE_CCW -> r -= dr
@@ -72,6 +77,7 @@ class Spaceship(private val isPlayer: Boolean) : Entity() {
                 }
             }
         }
+        commands = null
 
         if (speed > 0) {
             renderX += cos(radians) * speed
