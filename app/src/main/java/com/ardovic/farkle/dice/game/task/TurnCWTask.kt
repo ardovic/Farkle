@@ -4,7 +4,7 @@ import com.ardovic.farkle.dice.game.Command
 
 object TurnCWTask : Task() {
 
-    private val commands = listOf(Command.ROTATE_CW)
+    private val commands = listOf(Command.ROTATE_CW, Command.ACCELERATE)
 
     override fun getCommands(): List<Command> = commands
 
